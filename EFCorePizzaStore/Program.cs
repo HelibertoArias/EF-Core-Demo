@@ -19,7 +19,19 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddDbContext<PizzaDb>(options => options.UseInMemoryDatabase("items"));
+//builder.Services.AddDbContext<PizzaDb>(options => options.UseInMemoryDatabase("items"));
+
+IConfiguration configuration = builder.Configuration;
+var stringConnection = "PizzaDbConnectionString";
+var connectionConfiguration = configuration.GetConnectionString(stringConnection);
+if (connectionConfiguration == null)
+{
+    throw new ArgumentNullException(nameof(connectionConfiguration), $"{stringConnection} doesn't exist in your appsetings.json");
+}
+
+builder.Services.AddDbContext<PizzaDb>(options =>
+            options.UseSqlServer(connectionConfiguration)
+);
 
 // SQLite
 // - builder.Services.AddSqlite<PizzaDb>(connectionString);
